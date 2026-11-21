@@ -1,22 +1,21 @@
-# Next steps: connecting sports.hasanai.net
+# Next steps
 
-The site already works at https://sports-prototype.onrender.com.
-Render will not take a third custom domain on your current workspace plan (2 of 2 are used by hasanai.net and healthcompass.hasanai.net).
+## 1. Keep accounts and posts (important)
+The real app lives at https://hasanai.net/sports/ (inside the portfolio). Render has **no `DATABASE_URL`**, so the site uses a SQLite file inside the container and **everything resets on each deploy or restart** (free instances restart after ~15 min idle).
 
-Choose one option:
+1. Neon (https://neon.tech) → your project → **Connect** → copy the connection string (`postgresql://…?sslmode=require`).
+2. Render → **PersonalPortfolio → Environment → Add Environment Variable**: Key `DATABASE_URL`, Value: the string. Save.
+   (There are currently two variables named `username` and `password` there; the app doesn't use them. Delete them unless you added them on purpose.)
+3. Render → **Manual Deploy → Deploy latest commit**. On start-up the tables are created in Neon and the resume, walkthroughs and admin user are filled in again.
+4. Check https://hasanai.net/sports/ : sign up, post, log out, redeploy, and the post should still be there.
 
-## Option A: Cloudflare Pages (free, recommended)
-Your DNS is already on Cloudflare, so this is the simplest route.
-1. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → choose `sports-prototype`. GitHub may ask for your 2FA code.
-2. Framework: None. Build command: empty. Output directory: `/` (or `.`).
-3. After the first deploy: Custom domains → add `sports.hasanai.net`. Cloudflare creates the DNS record itself.
-4. Optionally, delete the Render site `sports-prototype` afterwards so it doesn't run twice.
+## 2. Deploying the portfolio
+Auto-deploy is off for PersonalPortfolio. After merging to `main`, use **Manual Deploy → Deploy latest commit** (or turn auto-deploy on in Settings).
 
-## Option B: Upgrade the Render workspace
-1. Render → Billing → upgrade to a plan with more custom domains (this costs money).
-2. sports-prototype → Settings → Custom Domains → add `sports.hasanai.net` and note the target (`sports-prototype.onrender.com`).
-3. Cloudflare → hasanai.net → DNS → Add record: CNAME, name `sports`, target `sports-prototype.onrender.com`, **Proxy off (DNS only)**.
-4. Back in Render, click Verify.
+## 3. sports.hasanai.net (optional)
+The page is already reachable at https://hasanai.net/sports/. A separate subdomain is only needed if you want that exact address. Render's plan allows 2 custom domains and both are used. Options:
+- **Cloudflare redirect rule** (free, quick): `sports.hasanai.net/*` → `https://hasanai.net/sports/`.
+- Upgrade Render, or host this repo on Cloudflare Pages (demo-only copy, no accounts).
 
-## Option C: Redirect only (free, quick)
-In Cloudflare, add a redirect rule from `sports.hasanai.net` to `https://sports-prototype.onrender.com`. The address bar will then show the onrender.com address.
+## 4. This repo vs the live app
+`index.html` here is a copy of `static/sports/index.html` from the portfolio. Without the portfolio's API it runs in demo-only mode. Edit the portfolio copy first, then copy it here.
